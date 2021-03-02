@@ -15,6 +15,12 @@ class CharacterRefController extends Controller
         return $characterRef;
     }
 
+    public function showAllCharacterRefByUserId($userId)
+    {
+        $characterRef = DB::select('SELECT * FROM CharacterRef WHERE userId=?', [$userId]);
+        return $characterRef;
+    }
+
     public function showOneCharacterRef($charRefId)
     {
         $characterRef = DB::select('SELECT * FROM CharacterRef WHERE charRefId=?', [$charRefId]);
@@ -28,7 +34,7 @@ class CharacterRefController extends Controller
         $this->validate($request, [
             'userId' => 'required',
             'name' => 'required',
-            'jobTItle' => 'required',
+            'jobTitle' => 'required',
             'contactNo' => 'required',
             'email' => 'required'
         ]);
@@ -37,7 +43,7 @@ class CharacterRefController extends Controller
 
         $characterRef = DB::insert($query, [$request->userId, $request->name, $request->jobTitle, $request->contactNo, $request->email]);
 
-        return response()->json('CharacterRef created successfully', 201);
+        return response()->json(['CharacterRef created successfully',$characterRef], 201);
     }
 
 
@@ -48,17 +54,17 @@ class CharacterRefController extends Controller
         $this->validate($request, [
             'userId' => 'required',
             'name' => 'required',
-            'jobTItle' => 'required',
+            'jobTitle' => 'required',
             'contactNo' => 'required',
             'email' => 'required'
         ]);
 
-        $query = "EXEC addCharacterRef @_userId=?, @_name=?, @_jobTitle=?,@_contactNo=?, @_email=?";
+        $query = "EXEC updateCharacterRef @_charRefId=?, @_name=?, @_jobTitle=?,@_contactNo=?, @_email=?";
 
-        $characterRef = DB::update($query, [$request->userId, $request->name, $request->jobTitle, $request->contactNo, $request->email]);
+        $characterRef = DB::update($query, [$request->charRefId, $request->name, $request->jobTitle, $request->contactNo, $request->email]);
 
 
-        return response()->json('CharacterRef updated successfully', 200);
+        return response()->json(['CharacterRef updated successfully',$characterRef], 200);
     }
 
 
@@ -68,6 +74,6 @@ class CharacterRefController extends Controller
         $query = 'EXEC deleteCharacterRef @_charRefId=?';
         DB::delete($query, [$charRefId]);
 
-        return response()->json('CharacterRef Deleted successfully', 200);
+        return response()->json(['CharacterRef Deleted successfully', $query], 200);
     }
 }

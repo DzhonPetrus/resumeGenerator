@@ -12,6 +12,16 @@ class UserController extends Controller
     {
         $user = DB::select('SELECT * FROM Users WHERE userId=?', [$userId]);
 
+        if($user === [])
+            return response()->json('User does not exist', 404);
+
+        return $user;
+    }
+
+    public function showOneUserByUsername($username)
+    {
+        $user = DB::select('SELECT userId, username FROM Users WHERE username=?', [$username]);
+
         return $user;
     }
 
@@ -22,9 +32,15 @@ class UserController extends Controller
             'password' => 'required',
         ]);
 
-        $user = DB::raw('EXEC addUser @_username=?, @_password=?', [$request->username, $request->password]);
 
-        return response()->json($user, 201);
+        $userExist = $this->showOneUserByUsername($request->username);
+
+        if(count($userExist) !== 0)
+            return response()->json('User already exist');
+
+        $user = DB::insert('EXEC addUser @_username=?, @_password=?', [$request->username, $request->password]);
+
+        return response()->json($this->showOneUserByUsername($request->username), 201);
     }
 
     public function login(Request $request)
@@ -50,5 +66,18 @@ class UserController extends Controller
         $user = $this->showOneUser($request->userId);
 
         return response()->json($user, 200);
+    }
+
+    public function updateUserPassword(Request $request)
+    {
+        $this->validate($request, [
+            'userId' => 'required',
+            'password' => 'required',
+        ]);
+        $user = DB::update('EXEC updateUserPassword @_userId=?, @_password=?', [$request->userId, $request->password]);
+
+        $user = $this->showOneUser($request->userId);
+
+        return response()->json(['Password has been successfully updated', $user], 200);
     }
 }

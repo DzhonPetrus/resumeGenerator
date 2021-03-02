@@ -22,11 +22,13 @@ $router->get('/', function () use ($router) {
 $router->group(['prefix' => 'api'], function ($router) {
     // USERS
     $router->get('user/{userId}', 'UserController@showOneUser');
+    $router->get('username/{username}', 'UserController@showOneUserByUsername');
 
     $router->post('user/register', 'UserController@register');
     $router->post('user/login', 'UserController@login');
 
     $router->put('user/isActive', 'UserController@updateUserisActive');
+    $router->put('user/password', 'UserController@updateUserPassword');
 
 
     // PERSONAL INFO
@@ -42,6 +44,7 @@ $router->group(['prefix' => 'api'], function ($router) {
     // WORK HISTORY
     $router->get('workHistory', 'WorkHistoryController@showAllWorkHistory');
     $router->get('workHistory/{workHistoryId}', 'WorkHistoryController@showOneWorkHistory');
+    $router->get('workHistories/{userId}', 'WorkHistoryController@showAllWorkHistoryByUserId');
 
     $router->post('workHistory', 'WorkHistoryController@addWorkHistory');
 
@@ -52,6 +55,7 @@ $router->group(['prefix' => 'api'], function ($router) {
     // EDUCATIONAL BACKGROUND
     $router->get('educationBG', 'EducationBGController@showAllEducationBG');
     $router->get('educationBG/{educationId}', 'EducationBGController@showOneEducationBG');
+    $router->get('educationBGs/{userId}', 'EducationBGController@showAllEducationBGByUserId');
 
     $router->post('educationBG', 'EducationBGController@addEducationBG');
 
@@ -62,6 +66,7 @@ $router->group(['prefix' => 'api'], function ($router) {
     // CHARACTER REFERENCES
     $router->get('characterRef', 'CharacterRefController@showAllCharacterRef');
     $router->get('characterRef/{charRefId}', 'CharacterRefController@showOneCharacterRef');
+    $router->get('characterRefs/{userId}', 'CharacterRefController@showAllCharacterRefByUserId');
 
     $router->post('characterRef', 'CharacterRefController@addCharacterRef');
 

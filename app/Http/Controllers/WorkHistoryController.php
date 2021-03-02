@@ -8,16 +8,23 @@ use Illuminate\Http\Request;
 
 class WorkHistoryController extends Controller
 {
+    public function showAllWorkHistoryByUserId($userId)
+    {
+        $workHistories = DB::select('SELECT * FROM WorkHistory WHERE userId=? ORDER BY startDate DESC', [$userId]);
+
+        return $workHistories;
+    }
+
     public function showAllWorkHistory()
     {
-        $workHistories = DB::select('SELECT * FROM WorkHistory');
+        $workHistories = DB::select('SELECT * FROM WorkHistory ORDER BY startDate DESC');
 
         return $workHistories;
     }
 
     public function showOneWorkHistory($workHistoryId)
     {
-        $workHistory = DB::select('SELECT * FROM WorkHistory WHERE workHistoryId=?', [$workHistoryId]);
+        $workHistory = DB::select('SELECT * FROM WorkHistory WHERE workHistoryId=? ORDER BY startDate DESC', [$workHistoryId]);
         return $workHistory;
     }
 
@@ -35,11 +42,12 @@ class WorkHistoryController extends Controller
             'jobDescription' => 'required',
         ]);
 
+
         $query = "EXEC addWorkHistory @_userId=?, @_jobTitle=?, @_employer=?, @_startDate=?, @_endDate=?, @_location=?, @_jobDescription = ? ";
 
         $workHistory = DB::insert($query, [$request->userId, $request->jobTitle, $request->employer, $request->startDate, $request->endDate, $request->location, $request->jobDescription]);
 
-        return response()->json('WorkHistory created successfully', 201);
+        return response()->json(['Work History created successfully', $workHistory], 201);
     }
 
 
@@ -60,7 +68,7 @@ class WorkHistoryController extends Controller
 
         $workHistory = DB::update($query, [$request->workHistoryId, $request->jobTitle, $request->employer, $request->startDate, $request->endDate, $request->location, $request->jobDescription]);
 
-        return response()->json('WorkHistory updated successfully', 200);
+        return response()->json(['WorkHistory updated successfully',$workHistory], 200);
     }
 
 
@@ -70,6 +78,6 @@ class WorkHistoryController extends Controller
         $query = 'EXEC deleteWorkHistory @_workHistoryId=?';
         DB::delete($query, [$workHistoryId]);
 
-        return response()->json('WorkHistory Deleted successfully', 200);
+        return response()->json(['WorkHistory Deleted successfully'], 200);
     }
 }
